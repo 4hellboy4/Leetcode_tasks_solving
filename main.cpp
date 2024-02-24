@@ -12,6 +12,7 @@ using namespace std;
 //}
 
 set<string> my_set;
+vector<string> sorted_array;
 
 int count_symbol(string& str, char& c) {
     int cnt = 0;
@@ -36,12 +37,32 @@ void alphabet1(vector<char>& symbols, int& num) {
             temp.emplace_back(word);
     }
 
-    sort(temp.begin(), temp.end());
-
     for (int i = 0; i < num - 1; ++i) {
         cout << temp[i] << " ";
     }
 }
+
+void alphabet2(vector<char>& symbols, int& num) {
+    int cnt = 0;
+    for (string word : my_set) {
+        if (cnt == num) {
+            break;
+        }
+        bool flag = true;
+        for (char s : symbols) {
+            int cnt = count_symbol(word, s);
+            if (cnt < 1) {
+                flag = false;
+                break;
+            }
+        }
+        if (flag) {
+            cout << word << " ";
+            cnt += 1;
+        }
+    }
+}
+
 
 
 
@@ -71,15 +92,21 @@ int main() {
         cin >> lengths.at(i);
     }
 
+
+
     for (char s : symbols) {
         permutations(n, symbols, "");
     }
 
-//    for (string word : my_set) {
-//        cout << word << endl;
-//    }
+    for (string word : my_set) {
+        sorted_array.emplace_back(word);
+    }
+
+    std::sort(sorted_array.begin(), sorted_array.end());
 
     cout << "_" << " ";
     alphabet1(symbols, lengths[0]);
+    cout << endl;
+    alphabet2(symbols, lengths[1]);
 
 }
