@@ -2,6 +2,7 @@
 #include <vector>
 #include <set>
 #include <algorithm>
+#include <cstring>
 
 using namespace std;
 
@@ -23,8 +24,11 @@ int count_symbol(string& str, char& c) {
 }
 
 void alphabet1(vector<char>& symbols, int& num) {
-    vector<string> temp;
-    for (string word : my_set) {
+    int counter = 0;
+    for (string word : sorted_array) {
+        if (counter == num) {
+            break;
+        }
         bool flag = true;
         for (char s : symbols) {
             int cnt = count_symbol(word, s);
@@ -33,19 +37,17 @@ void alphabet1(vector<char>& symbols, int& num) {
                 break;
             }
         }
-        if (flag)
-            temp.emplace_back(word);
-    }
-
-    for (int i = 0; i < num - 1; ++i) {
-        cout << temp[i] << " ";
+        if (flag) {
+            cout << (word == "" ? "_" : word) << " ";
+            counter += 1;
+        }
     }
 }
 
 void alphabet2(vector<char>& symbols, int& num) {
-    int cnt = 0;
-    for (string word : my_set) {
-        if (cnt == num) {
+    int counter = 0;
+    for (string word : sorted_array) {
+        if (counter == num) {
             break;
         }
         bool flag = true;
@@ -58,13 +60,41 @@ void alphabet2(vector<char>& symbols, int& num) {
         }
         if (flag) {
             cout << word << " ";
-            cnt += 1;
+            counter += 1;
+        }
+    }
+}
+
+void alphabet3(vector<char>& symbols, int& num) {
+    int counter = 0;
+    for (string word : sorted_array) {
+        if (counter == num) {
+            break;
+        }
+        int flag = 0;
+        for (char s : symbols) {
+            int cnt = count_symbol(word, s);
+            if (cnt == 0) {
+                flag += 1;
+            }
+        }
+        if (flag == 1) {
+            cout << word << " ";
+            counter += 1;
         }
     }
 }
 
 
 
+bool myPredicate(const std::string& str1, const std::string& str2) {
+    if (str1.size() < str2.size()) {
+        return true;
+    } else if (str1.size() == str2.size()) {
+        return str1 < str2;
+    }
+    return false;
+}
 
 void permutations(int& n, vector<char>& array, string str) {
     if ((str.size() > 2*n) || my_set.find(str) != my_set.end())
@@ -92,8 +122,6 @@ int main() {
         cin >> lengths.at(i);
     }
 
-
-
     for (char s : symbols) {
         permutations(n, symbols, "");
     }
@@ -102,11 +130,17 @@ int main() {
         sorted_array.emplace_back(word);
     }
 
-    std::sort(sorted_array.begin(), sorted_array.end());
+    std::sort(sorted_array.begin(), sorted_array.end(), myPredicate);
 
-    cout << "_" << " ";
+//    for (string s : sorted_array) {
+//        cout << s << endl;
+//    }
+
+//    cout << "_" << " ";
     alphabet1(symbols, lengths[0]);
     cout << endl;
     alphabet2(symbols, lengths[1]);
+    cout << endl;
+    alphabet3(symbols, lengths[2]);
 
 }
