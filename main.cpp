@@ -8,7 +8,6 @@
 using namespace std;
 
 set<string> my_set;
-queue<string> q;
 vector<string> l1;
 vector<string> l2;
 vector<string> l3;
@@ -56,27 +55,23 @@ bool isL3(string& str, vector<char>& symbols) {
     return flag == 1;
 }
 
-void permutations(int l1_size, int l2_size, int l3_size, vector<char>& symbols) {
-    int cnt1 = 1;
-    int cnt2 = 0;
-    int cnt3 = 0;
-    while ( (cnt1 <= l1_size || cnt2 <= l2_size || cnt3 <= l3_size)) {
+void permutations(int& l1_size, int& l2_size, int& l3_size, vector<char>& symbols) {
+    queue<string> q;
+    q.push("");
+    while (!q.empty() && (l1.size() < l1_size || l2.size() < l2_size || l3.size() < l3_size)) {
         string temp = q.front();
         q.pop();
-        if (isL1(temp, symbols)) {
-            l1.emplace_back(temp);
-            cnt1++;
+        if (isL1(temp, symbols) && l1.size() < l1_size) {
+            l1.emplace_back(temp != "" ? temp : "_");
         }
-        if (isL2(temp, symbols)) {
+        if (isL2(temp, symbols) && l2.size() < l2_size) {
             l2.emplace_back(temp);
-            cnt2++;
         }
-        if (isL3(temp, symbols)) {
-            l3.emplace_back(temp);
-            cnt3++;
+        if (isL3(temp, symbols) && l3.size() < l3_size) {
+            l3.emplace_back(temp != "" ? temp : "_");
         }
         for (char symbol : symbols) {
-            string new_string = temp + string(1, symbol);
+            string new_string = temp + symbol;
             q.push(new_string);
         }
     }
@@ -98,14 +93,9 @@ int main() {
         cin >> lengths.at(i);
     }
 
-    for (char symbol : symbols) {
-        q.push(string(1, symbol));
-    }
-
     permutations(lengths[0], lengths[1], lengths[2], symbols);
 
-    cout << "_" << " ";
-    for (int i = 0; i < lengths[0] - 1; ++i) {
+    for (int i = 0; i < lengths[0]; ++i) {
         cout << l1.at(i) << " ";
     }
     cout << endl;
