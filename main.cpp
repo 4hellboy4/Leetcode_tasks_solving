@@ -1,110 +1,80 @@
 #include <iostream>
 #include <vector>
-#include <set>
-#include <algorithm>
-#include <cstring>
-#include <queue>
 
 using namespace std;
 
-set<string> my_set;
-vector<string> l1;
-vector<string> l2;
-vector<string> l3;
+class Pair {
+public:
+    int element;
+    int count;
 
-int count_symbol(string& str, char& c) {
-    int cnt = 0;
-    for (int i = 0; i < str.size(); ++i) {
-        cnt += (str.at(i) == c ? 1 : 0);
-    }
-    return cnt;
-}
-
-bool isL1(string& str, vector<char>& symbols) {
-    bool flag = true;
-    for (char symbol : symbols) {
-        int cnt = count_symbol(str, symbol);
-        if (cnt % 2 != 0) {
-            flag = false;
-            break;
-        }
-    }
-    return flag;
-}
-
-bool isL2(string& str, vector<char>& symbols) {
-    bool flag = true;
-    for (char symbol : symbols) {
-        int cnt = count_symbol(str, symbol);
-        if (cnt < 1) {
-            flag = false;
-            break;
-        }
-    }
-    return flag;
-}
-
-bool isL3(string& str, vector<char>& symbols) {
-    int flag = 0;
-    for (char symbol : symbols) {
-        int cnt = count_symbol(str, symbol);
-        if (cnt < 1) {
-            flag += 1;
-        }
-    }
-    return flag == 1;
-}
-
-void permutations(int& l1_size, int& l2_size, int& l3_size, vector<char>& symbols) {
-    queue<string> q;
-    q.push("");
-    while (!q.empty() && (l1.size() < l1_size || l2.size() < l2_size || l3.size() < l3_size)) {
-        string temp = q.front();
-        q.pop();
-        if (isL1(temp, symbols) && l1.size() < l1_size) {
-            l1.emplace_back(temp != "" ? temp : "_");
-        }
-        if (isL2(temp, symbols) && l2.size() < l2_size) {
-            l2.emplace_back(temp);
-        }
-        if (isL3(temp, symbols) && l3.size() < l3_size) {
-            l3.emplace_back(temp != "" ? temp : "_");
-        }
-        for (char symbol : symbols) {
-            string new_string = temp + symbol;
-            q.push(new_string);
-        }
-    }
-}
-
+    Pair(int element, int count) : element(element), count(count) {}
+};
 
 int main() {
     int n;
     cin >> n;
 
-    vector<char> symbols(n);
-    vector<int> lengths(3);
+    vector<int> nums(n);
 
     for (int i = 0; i < n; ++i) {
-        cin >> symbols.at(i);
+        cin >> nums[i];
     }
 
-    for (int i = 0; i < 3; ++i) {
-        cin >> lengths.at(i);
+    vector<Pair> arr;
+
+    int current_num = nums[0];
+    int cnt = 1;
+    int i = 1;
+
+    while (i < nums.size()) {
+        int current = nums[i];
+        if (current_num != current) {
+            Pair temp = Pair(current_num, cnt);
+            arr.emplace_back(temp);
+
+            current_num = nums[i];
+            cnt = 1;
+        } else {
+            cnt += 1;
+        }
+        i++;
     }
 
-    permutations(lengths[0], lengths[1], lengths[2], symbols);
+    Pair temp = Pair(current_num, cnt);
+    arr.emplace_back(temp);
 
-    for (int i = 0; i < lengths[0]; ++i) {
-        cout << l1.at(i) << " ";
-    }
-    cout << endl;
-    for (int i = 0; i < lengths[1]; ++i) {
-        cout << l2.at(i) << " ";
-    }
-    cout << endl;
-    for (int i = 0; i < lengths[2]; ++i) {
-        cout << l3.at(i) << " ";
+    int answer = max(arr[0].element == 1 ? (arr[0].count) : 0,
+                     arr[arr.size() - 1].element == 1
+                     ? (arr[arr.size() - 1].count)
+                     : -1);
+
+    if (arr.size() == 1 && arr[0].element == 0) {
+        answer = 0;
+    } else if (arr.size() == 1 && arr[0].element == 1) {
+        answer = answer - 1;
     }
 
+
+    i = 0;
+
+    while (i < arr.size() - 1) {
+        if (arr[i].element == 1) {
+            answer = max(answer, arr[i].count);
+            if ( i + 2 < arr.size()) {
+                answer = max(answer,
+                             (arr[i + 1].count == 1 && arr[i + 2].element == 1)
+                             ? (arr[i].count + arr[i + 2].count)
+                             : 0);
+            }
+            answer = max(answer, arr[i + 1].element == 1
+                                 ? arr[i].count + arr[i + 1].count - 1
+                                 : 0);
+        }
+        i++;
+    }
+
+    cout << answer;
+
+    return 0;
 }
