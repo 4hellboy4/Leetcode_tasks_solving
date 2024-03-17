@@ -1,69 +1,36 @@
 #include <iostream>
-#include <vector>
-#include <algorithm>
+#include <string>
+#include <cctype>
+
 
 using namespace std;
 
-string divide(long long num) {
-    string temp;
-    while (num != 0) {
-        temp += to_string(num%10);
-        num /= 10;
-    }
-    reverse(temp.begin(), temp.end());
-    return temp;
-}
-
-int compress(vector<char>& chars) {
-    string s = "";
-    if (!chars.empty()) {
-        char current = chars[0];
-        int cnt = 1;
-        for (int i = 1; i < chars.size(); ++i) {
-            if (current == chars[i]) {
-                cnt += 1;
-            } else {
-                if (cnt == 1) {
-                    s += current;
-                } else {
-                    s += current;
-                    s += divide(cnt);
-                }
-                current = chars[i];
-                cnt = 1;
-            }
-        }
-        if (cnt == 1) {
-            s += current;
-        } else {
-            s += current;
-            s += divide(cnt);
+bool isPalindrome(string s) {
+    string temp = "";
+    for (int i = 0; i < s.size(); ++i) {
+        char sym = s.at(i);
+        if (isalpha(sym)) {
+            temp += tolower(sym);
+        } else if (isdigit(sym)) {
+            temp += sym;
         }
     }
-    chars.clear();
-    for (char sym : s) {
-        chars.emplace_back(sym);
-    }
-    cout << s << endl;
 
-    return (int) s.size();
+    for (int i = 0; i < ((int) temp.size()/2); ++i) {
+        if (temp[i] != temp[temp.size() - 1 - i]) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 int main() {
-    int n;
-    cin >> n;
+    string s;
 
-    vector<char> chars(n);
+    getline(cin, s);
 
-    for (int i = 0; i < n; ++i) {
-        cin >> chars[i];
-    }
-
-    cout << compress(chars) << endl;
-
-    for (char sym : chars) {
-        cout << sym << " ";
-    }
+    cout << (isPalindrome(s) ? "true" : "false") << endl;
 
     return 0;
 }
