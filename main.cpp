@@ -1,36 +1,54 @@
 #include <iostream>
 #include <string>
 #include <cctype>
-
+#include <cmath>
+#include <cstdlib>
 
 using namespace std;
 
-bool isPalindrome(string s) {
-    string temp = "";
-    for (int i = 0; i < s.size(); ++i) {
-        char sym = s.at(i);
-        if (isalpha(sym)) {
-            temp += tolower(sym);
-        } else if (isdigit(sym)) {
-            temp += sym;
-        }
+bool isOneEditDistance(string &s, string &t) {
+    int cnt = 0;
+    int i = 0;
+    int j = 0;
+
+    if (abs((int) (s.size() - t.size())) > 1) {
+        return false;
     }
 
-    for (int i = 0; i < ((int) temp.size()/2); ++i) {
-        if (temp[i] != temp[temp.size() - 1 - i]) {
-            return false;
+    while (i < s.size() && j < t.size()) {
+        if (cnt > 1) return false;
+        if (s.at(i) == t.at(j)) {
+            i += 1;
+            j += 1;
+        } else if (i + 1 < s.size() && s.at(i + 1) == t.at(j)) {
+            i += 1;
+            cnt += 1;
+        } else if (j + 1 < t.size() && s.at(i) == t.at(j + 1)) {
+            j += 1;
+            cnt += 1;
+        } else if (i + 1 < s.size() && j + 1 < t.size() && s.at(i + 1) == t.at(j + 1)) {
+            i += 1;
+            j += 1;
+            cnt += 1;
+        } else {
+            i += 1;
+            j += 1;
         }
     }
-
-    return true;
+    if (cnt == 0 && abs((int) (s.size() - t.size())) == 1)
+        cnt += 1;
+    return cnt == 1;
 }
 
+// qwerty
+// qwery
+
+
 int main() {
-    string s;
+    string s, t;
+    cin >> s >> t;
 
-    getline(cin, s);
-
-    cout << (isPalindrome(s) ? "true" : "false") << endl;
+    cout << (isOneEditDistance(s, t) ? "true" : "false") << endl;
 
     return 0;
 }
